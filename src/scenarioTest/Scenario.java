@@ -2,18 +2,59 @@ package scenarioTest;
 
 import personnages.Gaulois;
 import produit.Poisson;
+import produit.Produit;
 import produit.Sanglier;
 import villagegaulois.Etal;
 import villagegaulois.IEtal;
+import villagegaulois.IVillage;
 
 public class Scenario {
 
 	public static void main(String[] args) {
 
-		// TODO Partie 4 : creer de la classe anonyme Village
+		IVillage village = new IVillage() {
+			private IEtal[] marche = new IEtal[3];
+			private int nbEtal = 0;
+			
+			@Override
+			public <P extends Produit> boolean installerVendeur(Etal<P> etal, Gaulois vendeur, P[] produit, int prix) {
+				if (nbEtal > 2) {
+					return false; // Le marche est plein
+				}
+				
+				marche[nbEtal++] = etal;
+				etal.installerVendeur(vendeur, produit, prix);
+				return true;
+			}
 
-		// fin
-
+			@Override
+			public void acheterProduit(String produit, int quantiteSouhaitee) {
+				int quantiteAchetee = 0;
+				for (int i = 0; i < nbEtal && quantiteAchetee < quantiteSouhaitee; i++) {
+					int quantiteDispo = marche[i].contientProduit(produit, quantiteSouhaitee - quantiteAchetee);
+					if (quantiteDispo > 0) {
+						int prixPaye = marche[i].acheterProduit(quantiteDispo);
+						System.out.println("a l etal n " + (i + 1) + ", j achete " + quantiteDispo + " " + 
+											produit + " et je paye " + prixPaye + " sous.");
+						quantiteAchetee += quantiteDispo;
+					}
+				}
+				System.out.println("Je voulais " + quantiteSouhaitee + " " + produit + ", j en ai achete " + 
+									quantiteAchetee + ".\n");
+				
+			}
+			
+			@Override
+			public String toString() {
+				StringBuilder out = new StringBuilder();
+				for (int i = 0; i < nbEtal; i++) {
+					out.append(marche[i].etatEtal() + "\n");
+				}
+				return out.toString();
+			}
+		};
+		
+		
 		Gaulois ordralfabetix = new Gaulois("Ordralfabétix", 9);
 		Gaulois obelix = new Gaulois("Obélix", 20);
 		Gaulois asterix = new Gaulois("Astérix", 6);
@@ -33,23 +74,14 @@ public class Scenario {
 		Poisson poisson1 = new Poisson("lundi");
 		Poisson[] poissons = { poisson1 };
 		
-		IEtal[] marche = new IEtal[] {etalSanglierAsterix, etalSanglierObelix, etalPoisson};
-
-		etalSanglierObelix.installerVendeur(obelix, sangliersObelix, 8);
-		etalSanglierAsterix.installerVendeur(asterix, sangliersAsterix, 10);
-		etalPoisson.installerVendeur(ordralfabetix, poissons, 7);
+		village.installerVendeur(etalSanglierAsterix, asterix, sangliersAsterix, 10);
+		village.installerVendeur(etalSanglierObelix, obelix, sangliersObelix, 8);
+		village.installerVendeur(etalPoisson, ordralfabetix, poissons, 5);
+ 
+		System.out.println(village);
 		
-		for (int i = 0; i < marche.length; i++) {
-			System.out.println(marche[i].etatEtal());
-		}
-		
-		System.out.println("a l etal n 1, j achete 2 sangliers et je paye " + marche[0].acheterProduit(2) + " sous.");
-		System.out.println("a l etal n 2, j achete 2 sangliers et je paye " + marche[1].acheterProduit(1) + " sous.");
-		System.out.println("Je voulais acheter 3 sangliers, j'en ai achete 3.\n");
-		
-		for (int i = 0; i < marche.length; i++) {
-			System.out.println(marche[i].etatEtal());
-		}
+		village.acheterProduit("sanglier", 3);
+ 
+		System.out.println(village);
 	}
-
 }
