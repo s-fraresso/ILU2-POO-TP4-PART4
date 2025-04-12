@@ -33,11 +33,23 @@ public class Scenario {
 		Poisson poisson1 = new Poisson("lundi");
 		Poisson[] poissons = { poisson1 };
 		
-		IEtal[] marche = new IEtal[] {etalPoisson, etalSanglierAsterix, etalSanglierObelix};
+		IEtal[] marche = new IEtal[] {etalSanglierAsterix, etalSanglierObelix, etalPoisson};
 
 		etalSanglierObelix.installerVendeur(obelix, sangliersObelix, 8);
 		etalSanglierAsterix.installerVendeur(asterix, sangliersAsterix, 10);
 		etalPoisson.installerVendeur(ordralfabetix, poissons, 7);
+		
+		for (int i = 0; i < marche.length; i++) {
+			System.out.println(marche[i].etatEtal());
+		}
+		
+		System.out.println("a l etal n 1, j achete 2 sangliers et je paye " + marche[0].acheterProduit(2) + " sous.");
+		System.out.println("a l etal n 2, j achete 2 sangliers et je paye " + marche[1].acheterProduit(1) + " sous.");
+		System.out.println("Je voulais acheter 3 sangliers, j'en ai achete 3.\n");
+		
+		for (int i = 0; i < marche.length; i++) {
+			System.out.println(marche[i].etatEtal());
+		}
 	}
 
 }
