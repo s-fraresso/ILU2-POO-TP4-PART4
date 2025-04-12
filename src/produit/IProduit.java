@@ -6,4 +6,8 @@ public interface IProduit {
 
 	String decrireProduit();
 
+	default int calculerPrix(int prix) {
+		return prix;
+	}
+
 }
